@@ -1,0 +1,14 @@
+.vscode
+
+start_qemu.sh
+
+.clang-format
+
+shared_files
+
+*.o
+*.cmd
+*.mod*
+*.ko
+*.order
+*.symvers
