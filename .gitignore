@@ -12,3 +12,6 @@ shared_files
 *.ko
 *.order
 *.symvers
+
+
+interact/interact_*

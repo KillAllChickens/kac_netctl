@@ -14,7 +14,6 @@ void print_usage(const char* prog_name) {
 	exit(EXIT_FAILURE);
 }
 
-// Reads the current status from the sysfs file.
 void handle_status() {
 	FILE* fp = fopen(SYSFS_FILE, "r");
 	if (fp == NULL) {
