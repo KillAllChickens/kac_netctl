@@ -1,4 +1,4 @@
-// For testing
+// For testing the sysfs version of the kernel module
 
 #include <errno.h>
 #include <fcntl.h>
@@ -7,27 +7,28 @@
 #include <string.h>
 #include <unistd.h>
 
-#define PROC_FILE "/proc/kac_net"
+#define SYSFS_FILE "/sys/kernel/kac_net/block_all"
 
 void print_usage(const char* prog_name) {
 	fprintf(stderr, "Usage: %s <status|on|off>\n", prog_name);
 	exit(EXIT_FAILURE);
 }
 
+// Reads the current status from the sysfs file.
 void handle_status() {
-	FILE* fp = fopen(PROC_FILE, "r");
+	FILE* fp = fopen(SYSFS_FILE, "r");
 	if (fp == NULL) {
 		if (errno == ENOENT) {
-			fprintf(stderr, "Error: Proc file not found.\nIs the 'kac_netctl' kernel module loaded?\n");
+			fprintf(stderr, "Error: Sysfs file not found at %s\nIs the 'kac_netctl' kernel module loaded?\n", SYSFS_FILE);
 		} else {
-			perror("Error opening proc file for reading");
+			perror("Error opening sysfs file for reading");
 		}
 		exit(EXIT_FAILURE);
 	}
 
 	int status_char = fgetc(fp);
 	if (status_char == EOF) {
-		fprintf(stderr, "Error: Could not read from proc file.\n");
+		fprintf(stderr, "Error: Could not read from sysfs file.\n");
 		fclose(fp);
 		exit(EXIT_FAILURE);
 	}
@@ -43,23 +44,23 @@ void handle_status() {
 	fclose(fp);
 }
 
-// Writes the desired state ("1" for on, "0" for off) to the proc file.
+// Writes the desired state ("1" for on, "0" for off) to the sysfs file.
 void handle_set(const char* state, const char* friendly_name) {
-	FILE* fp = fopen(PROC_FILE, "w");
+	FILE* fp = fopen(SYSFS_FILE, "w");
 	if (fp == NULL) {
 		if (errno == EACCES) {
 			fprintf(stderr, "Error: Permission denied.\nYou probably need to run this command with sudo.\n");
 		} else if (errno == ENOENT) {
-			fprintf(stderr, "Error: Proc file not found.\nIs the 'kac_netctl' kernel module loaded?\n");
+			fprintf(stderr, "Error: Sysfs file not found at %s\nIs the 'kac_netctl' kernel module loaded?\n", SYSFS_FILE);
 		} else {
-			perror("Error opening proc file for writing");
+			perror("Error opening sysfs file for writing");
 		}
 		exit(EXIT_FAILURE);
 	}
 
 	size_t written = fwrite(state, sizeof(char), 1, fp);
 	if (written < 1) {
-		fprintf(stderr, "Error: Failed to write to proc file.\n");
+		fprintf(stderr, "Error: Failed to write to sysfs file.\n");
 		fclose(fp);
 		exit(EXIT_FAILURE);
 	}
