@@ -1,7 +1,7 @@
 # kac_netctl
 
 A kernel module designed for use within KACOS.  
-Allows a user space application to block all netwrok traffic at the kernel level.  
+Allows a user space application to block all network traffic at the kernel level.  
 `interact/` has an example script to toggle networking  
 
 to build, run `make` in the projects root.  

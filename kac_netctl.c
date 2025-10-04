@@ -8,7 +8,6 @@
 #include <linux/netfilter_ipv6.h>
 #include <linux/skbuff.h>
 #include <linux/sysfs.h>
-#include <linux/uaccess.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vance Perry <vance@killallchickens.org>");
@@ -80,25 +79,28 @@ static int __init kac_init(void) {
 		return ret;
 	}
 
-	/* register netfilter hook for IPv4 PRE_ROUTING (covers incoming) */
+	/* IPv4 incoming */
 	nfho_ipv4_pre.hook = kac_nf_hook;
 	nfho_ipv4_pre.pf = NFPROTO_IPV4;
 	nfho_ipv4_pre.hooknum = NF_INET_PRE_ROUTING;
 	nfho_ipv4_pre.priority = NF_IP_PRI_FIRST;
 	nf_register_net_hook(&init_net, &nfho_ipv4_pre);
 
+	/* IPv4 outgoing */
 	nfho_ipv4_out.hook = kac_nf_hook;
 	nfho_ipv4_out.pf = NFPROTO_IPV4;
 	nfho_ipv4_out.hooknum = NF_INET_LOCAL_OUT;
 	nfho_ipv4_out.priority = NF_IP_PRI_FIRST;
 	nf_register_net_hook(&init_net, &nfho_ipv4_out);
 
+	/* IPv6 incoming */
 	nfho_ipv6_pre.hook = kac_nf_hook;
 	nfho_ipv6_pre.pf = NFPROTO_IPV6;
 	nfho_ipv6_pre.hooknum = NF_INET_PRE_ROUTING;
 	nfho_ipv6_pre.priority = NF_IP6_PRI_FIRST;
 	nf_register_net_hook(&init_net, &nfho_ipv6_pre);
 
+	/* IPv6 outgoing */
 	nfho_ipv6_out.hook = kac_nf_hook;
 	nfho_ipv6_out.pf = NFPROTO_IPV6;
 	nfho_ipv6_out.hooknum = NF_INET_LOCAL_OUT;
@@ -112,7 +114,7 @@ static int __init kac_init(void) {
 	// 	return ret;
 	// }
 
-    pr_info("kac_netctl loaded. Control: /sys/kernel/kac_net/block_all\n");
+	pr_info("kac_netctl loaded. Control: /sys/kernel/kac_net/block_all\n");
 	return 0;
 }
 
